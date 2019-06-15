@@ -1,0 +1,64 @@
+<!-- A really basic homepage. You may want to look at Bootstrap CSS examples to customize your own app! -->
+
+<!-- your CSS goes between <style> </style> -->
+<style>
+
+ .main {
+ background-color: rgba(255, 255, 255, 0.5);
+ margin-top: 100px;
+ padding-bottom: 50px;
+ }
+ .main h1 {
+ font-size: 3.5em;
+ font-family: Arial;
+ color: #2E3759;
+ }
+ .main h2 {
+ font-size: 2em;
+ font-family: Arial;
+ color: #2E3759;
+ }
+ .main h3 {
+ font-size: 2em;
+ font-family: Arial;
+ color: #2E3759;
+ }
+ .main p {
+ font-size:1em;
+ font-family: Arial;
+ color: #2E3759;
+ }
+
+</style>
+
+<div class="overlay">
+
+</div>
+
+
+<title>FoodMood</title>
+</head>
+<body>
+    <div class="main">
+      <div style="text-align:center">
+      <br><br><br>
+      <div class="starter-template">
+        <h2> Find a cooking channel!</h2>
+
+      <div><h3>What do you want to do?</h3></div>
+
+  <form id="style_form" action="/recommendations" method="POST">
+      <div class="panel-body">
+          <input type ="submit" name="action" value="Relax" style="height:100px; width:100px">
+      </div>
+      <div class="panel-body">
+          <input type ="submit" name="action" value="Laugh" style="height:100px; width:100px" >
+      </div>
+      <div class="panel-body">
+          <input type ="submit" name="action" value="Something else" style="height:100px; width:100px">
+      </div>
+ </form>
+
+    </div>
+    </div>
+  </body>
