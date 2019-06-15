@@ -66,6 +66,7 @@ input[type='checkbox']:checked {
 <br>
 <div class="container">
     <p>{{text}}</p>
+    <p>{{test}} </p>
 </div>
 
 <div><h3>Check all that apply:</h3></div>
@@ -100,6 +101,7 @@ input[type='checkbox']:checked {
       <li><input type="checkbox" name="category" value="excitement"> <b>excitement</b></li>
       <li><input type="checkbox" name="neutral" value="neutral"> <b>neutral</b></li>
     </ul>
+    <input type="hidden" name="commentfile" value="{{ infile }}">
     <input type="hidden" name="next_item_index" value="{{ next_item_index }}">
     <input type ="submit" name="action" value="submit" style="height:200px; width:200px">
 </form>
