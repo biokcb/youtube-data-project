@@ -16,10 +16,8 @@ def labeler():
     if request.method == 'POST':
         infile = request.form['commentfile']
         comments = pd.read_csv(infile, index_col=0)
-
-    try:
-        if request.method == 'POST':
-    
+             
+        try:
             if 'desc' in request.form.keys():
                 desc = request.form.getlist('desc')
             else:
@@ -30,17 +28,19 @@ def labeler():
             else:
                 category = ['other']
             
-            try:
-                next_item_index = int(request.form['next_item_index'])
-        
-                comments.iloc[next_item_index-1]['desc'] = desc
-                comments.iloc[next_item_index-1]['category'] = category
-            except TypeError:
+            if 'next_item_index' not in request.form.keys():
                 next_item_index = 0
-    
-            text = comments.iloc[next_item_index]['comments']
-            video_id = comments.iloc[next_item_index]['videos']
-        
+
+            else:
+                next_item_index = int(request.form['next_item_index'])
+
+            text = comments.iloc[next_item_index]['text']
+            if next_item_index - 1 == 0:
+                comments['desc'] = [[] for _ in range(len(comments))]
+                comments['category'] = [[] for _ in range(len(comments))]
+            
+            comments.ix[next_item_index-1,'desc'] = str(desc)
+            comments.ix[next_item_index-1,'category'] = str(category)
             comments.to_csv(infile)
             
             # Thanks to mVChr for inspiration on loading new data
@@ -50,21 +50,9 @@ def labeler():
                                text=text,
                                next_item_index=next_item_index+1)
         
-        else:
-            next_item_index = 0
-            text = comments.iloc[next_item_index]['comments']
-            video_id = comments.iloc[next_item_index]['videos']
-
+        except IndexError:
             comments.to_csv(infile)
-            return render_template('labeler.html',
-                               infile=infile,
-                               text=text, 
-                               next_item_index=next_item_index+1)
-
-    except IndexError:
-        comments.to_csv(infile)
-        return render_template('index.html')
-
+            return render_template('index.html')
 
 if __name__ == '__main__':
     #this runs your app locally
