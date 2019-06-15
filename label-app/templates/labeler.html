@@ -1,0 +1,109 @@
+<!-- A really basic homepage. You may want to look at Bootstrap CSS examples to customize your own app! -->
+
+<!-- your CSS goes between <style> </style> -->
+<style>
+
+ .main {
+ background-color: rgba(255, 255, 255, 0.5);
+ margin-top: 50px;
+ padding-bottom: 50px;
+ }
+ .main h1 {
+ font-size: 3.5em;
+ font-family: Arial;
+ color: #2E3759;
+ }
+ .main h2 {
+ font-size: 2em;
+ font-family: Arial;
+ color: #2E3759;
+ }
+ .main h3 {
+ font-size: 2em;
+ font-family: Arial;
+ color: #2E3759;
+ }
+ .main p {
+ font-size:1em;
+ font-family: Arial;
+ color: #2E3759;
+ }
+
+ul {
+  list-style-type: none;
+}
+li {
+  display: inline-block;
+}
+
+input[type='checkbox'] {
+    -webkit-appearance:none;
+    width:20px;
+    height:20px;
+    background:white;
+    border-radius:5px;
+    border:2px solid #555;
+}
+input[type='checkbox']:checked {
+    background: #27db42;
+}
+
+</style>
+
+<div class="overlay">
+
+</div>
+
+
+<title>Comment Labeler</title>
+</head>
+<body>
+    <div class="main">
+      <div style="text-align:center">
+      <br><br><br>
+      <div class="starter-template">
+      <h2> Help me label YouTube comments!</h2>
+<br>
+<div class="container">
+    <p>{{text}}</p>
+</div>
+
+<div><h3>Check all that apply:</h3></div>
+
+<form method="POST" action="/labeler">
+  <div class="input">
+    <!-- There are a number of input types to customize user input -->
+    <ul>
+      <li><input type="checkbox" name="desc" value="content"> <b>content</b></li>
+      <li><input type="checkbox" name="desc" value="mood"> <b>mood</b></li>
+      <li><input type="checkbox" name="desc" value="other"> <b>other </b></li>
+    </ul>
+  </div><br><hr>
+
+  <div class="input">
+    <!-- There are a number of input types to customize user input -->
+    <ul>
+      <li><input type="checkbox" name="category" value="informative"> <b>informative</b></li>
+      <li><input type="checkbox" name="category" value="incorrect"> <b>incorrect</b></li>
+      <li><input type="checkbox" name="category" value="delicious"> <b>delicious</b></li>
+      <li><input type="checkbox" name="category" value="entertaining"> <b>entertaining</b></li>
+      <li><input type="checkbox" name="category" value="sarcasm"> <b>sarcasm</b></li>
+      <li><input type="checkbox" name="category" value="annoyance"> <b>annoyance</b></li>
+      <li><input type="checkbox" name="category" value="anger"> <b>anger</b></li>
+      <li><input type="checkbox" name="category" value="disgust"> <b>disgust</b></li>
+      <li><input type="checkbox" name="category" value="pity"> <b>pity</b></li>
+      <li><input type="checkbox" name="category" value="sadness"> <b>sadness</b></li>
+      <li><input type="checkbox" name="category" value="relaxing"> <b>relaxing</b></li>
+      <li><input type="checkbox" name="category" value="love"> <b>love</b></li>
+      <li><input type="checkbox" name="category" value="weird"> <b>weird</b></li>
+      <li><input type="checkbox" name="category" value="surprise"> <b>surprise</b></li>
+      <li><input type="checkbox" name="category" value="excitement"> <b>excitement</b></li>
+      <li><input type="checkbox" name="neutral" value="neutral"> <b>neutral</b></li>
+    </ul>
+    <input type="hidden" name="next_item_index" value="{{ next_item_index }}">
+    <input type ="submit" name="action" value="submit" style="height:200px; width:200px">
+</form>
+
+    </div>
+    </div>
+  </body>
