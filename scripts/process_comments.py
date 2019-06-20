@@ -9,40 +9,6 @@ import pandas as pd
 import numpy as np
 import fastText
 
-def get_metadata(infile):
-    """ Opens a video JSON and returns relevant metadata """
-    keepers = ['id', 'uploader', 'uploader_id', 'uploader_url',
-               'channel_id', 'channel_url', 'upload_date', 
-               'title', 'thumbnail', 'description', 'categories',
-               'tags', 'duration', 'age_limit', 'view_count', 
-               'like_count', 'dislike_count', 'average_rating']
-
-    with open(infile) as mtda:
-        metadata = json.load(mtda)
- 
-    metadata = pd.DataFrame.from_dict(metadata, orient='index')
-    clean_metadata = metadata.loc[keepers]
-
-    return clean_metadata
-
-def get_videos(infile):
-    """ Opens a file with a a list of YT video IDs"""
-    
-    # Get all the video metadata first 
-    count = 0
-    with open('youtube-dl-archive.txt') as ytdl:
-        for line in ytdl:
-            clean_meta = get_metadata('metadata/' + line.strip() + '.info.json')
-
-            if count == 0:
-                channels = pd.DataFram.from_dict({'channel_id': channelid, 
-                                                  'videos': videoid}, orient='index').transpose()
-            else:
-                tempdf = pd.DataFrame.from_dict({'channel_id': channelid, 
-                                             'videos': videoid}, orient='index').transpose()
-                channels = channels.append(tempdf)
-            count +=1
-
 def get_comments(infile):
     """Returns a table of comment info"""
 
