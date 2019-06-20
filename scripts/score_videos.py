@@ -1,12 +1,16 @@
 #!/usr/bin/env python
 """ A script to aggregate comment labels and score videos """
 
-from collections import Counter
+import os
+import argparse
 import json
 import pandas as pd
 import numpy as np
-from sqlalchemy import Table, MetaData
+import psycopg2
 import sqlalchemy
+from collections import Counter
+from sqlalchemy import Table, MetaData, create_engine
+from sqlalchemy_utils import database_exists, create_database
 
 def get_metadata(filename):
     with open(filename) as mtda:
@@ -53,15 +57,21 @@ def agg_scores(df, prob):
     """ Aggregate predictions in a df """
 
     # sum all within each class
-    annoyed = np.sum(df['annoyed'].apply(lambda x: sel_class(x,prob))
-    joke = np.sum(df['joke'].apply(lambda x: sel_class(x,prob))
-    calm = np.sum(df['calm'].apply(lambda x: sel_class(x,prob))
-    excited = np.sum(df['excited'].apply(lambda x: sel_class(x,prob))
+    annoyed = np.sum(df['annoyed'].apply(lambda x: sel_class(x,prob)))
+    joke = np.sum(df['joke'].apply(lambda x: sel_class(x,prob)))
+    calm = np.sum(df['calm'].apply(lambda x: sel_class(x,prob)))
+    excited = np.sum(df['excited'].apply(lambda x: sel_class(x,prob)))
     all_moods = sum([annoyed, joke, calm, excited])
-    scores = {'annoyed': annoyed / all_moods, 
-              'joke': joke / all_moods, 
-              'calm': calm / all_moods ,
-              'excited': excited / all_moods}
+    if all_moods != 0:
+        scores = {'annoyed': annoyed / all_moods, 
+                  'joke': joke / all_moods, 
+                  'calm': calm / all_moods ,
+                  'excited': excited / all_moods}
+    else:
+        scores = {'annoyed': annoyed, 
+                  'joke': joke, 
+                  'calm': calm,
+                  'excited': excited}
 
     return scores
 
@@ -71,8 +81,14 @@ def add_scores(df, scores):
         ind = key + '_score'
         df[ind] = val
 
+    return df 
+
 def get_top_tagword(df):
     tags = df['tags'].values[0]
+
+    if isinstance(tags, list):
+        tags = ' '.join(tags)
+
     tags = tags.replace(',',' ').replace('{', '')
     tags = tags.replace('\"','').replace('}','')
     tags = tags.split()
@@ -118,6 +134,8 @@ def main():
         
         # add to db
         df_final.to_sql(args.table, con=connection, if_exists='append', index=False)
+        
+        print('Processed video: %s' % vid)
 
 if __name__ == '__main__':
     main()
