@@ -1,0 +1,86 @@
+<style>
+
+body{
+  background-image:url({{ url_for('static', filename='img/calum-lewis-391372-unsplash.jpg') }});
+  width:100%;
+  background-size: cover;
+}
+   
+@media only screen and (max-width: 800px) {
+    body { background-size: auto;}
+}
+
+ .main {
+ background-color: rgba(255, 255, 255, 0.5);
+ margin-top: 80px;
+ padding-bottom: 50px;
+ }
+ .main h1 {
+ font-size: 3.5em;
+ font-family: Arial;
+ color: #2E3759;
+ }
+ .main h2 {
+ font-size: 2em;
+ font-family: Arial;
+ color: #2E3759;
+ }
+ .main h3 {
+ font-size: 1.5em;
+ font-family: Arial;
+ color: #2E3759;
+ }
+ .main p {
+ font-size:1em;
+ font-family: Arial;
+ color: #2E3759;
+ }
+
+ .main hr {
+  border: none;
+  border-top: 1px solid whitesmoke;
+}
+
+input[type=button], input[type=submit], input[type=reset] {
+    width: 260px;
+    height: 20px;
+    background: #2E3759;
+    border: 1px solid #fff;
+    cursor: pointer;
+    border-radius: 2px;
+    color: white;
+    font-family: Arial;
+    font-size: 16px;
+    font-weight: 400;
+    padding: 6px;
+    margin-top: 10px;
+}
+
+</style>
+
+
+<title>FoodMood</title>
+</head>
+<body>
+<div class="main">
+  <div style="text-align:center">
+  <br><br>
+  <div class="starter-template">
+
+<br><br>
+<h1>You might like these videos!</h1>
+
+<div class="container">
+  <div class="starter-template">
+  {% for title,url,thumb,desc in vid_data %}
+    <p class="lead">
+    <a href="https://www.youtube.com/watch?v={{url}}"><h3>{{title}}</h3><br>
+    <img src="{{thumb}}" width="200" height="100"></a><br>
+    {{desc}}
+    <hr>
+
+  {% endfor %}
+</div></div>
+
+</div></div>
+</body>

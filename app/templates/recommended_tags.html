@@ -1,0 +1,91 @@
+<!-- A really basic homepage. You may want to look at Bootstrap CSS examples to customize your own app! -->
+
+<!-- your CSS goes between <style> </style> -->
+<style>
+
+body{
+  background-image:url({{ url_for('static', filename='img/calum-lewis-391372-unsplash.jpg') }});
+  width:100%;
+  background-size: cover;
+}
+   
+@media only screen and (max-width: 800px) {
+    body { background-size: auto;}
+}
+
+ .main {
+ background-color: rgba(255, 255, 255, 0.5);
+ margin-top: 100px;
+ padding-bottom: 50px;
+ }
+ .main h1 {
+ font-size: 3.5em;
+ font-family: Arial;
+ color: #2E3759;
+ }
+ .main h2 {
+ font-size: 2em;
+ font-family: Arial;
+ color: #2E3759;
+ }
+ .main h3 {
+ font-size: 2em;
+ font-family: Arial;
+ color: #2E3759;
+ }
+ .main p {
+ font-size:1em;
+ font-family: Arial;
+ color: #2E3759;
+ }
+
+ul {
+  list-style-type: none;
+}
+li {
+  display: inline-block;
+}
+
+input[type='checkbox'] {
+    -webkit-appearance:none;
+    width:20px;
+    height:20px;
+    background:white;
+    border-radius:5px;
+    border:2px solid #555;
+}
+input[type='checkbox']:checked {
+    background: #27db42;
+}
+
+</style>
+
+<div class="overlay">
+
+</div>
+
+
+<title>FoodMood</title>
+</head>
+<body>
+    <div class="main">
+      <div style="text-align:center">
+      <br><br><br>
+      <div class="starter-template">
+      <h2>Select some topics:</h2>
+<br>
+<form method="POST" action="/recommended_videos">
+  <div class="input">
+    <ul>
+    {% for tag in tags %}   
+      <li><input type="checkbox" name="taglist" value="{{tag}}"> <b>{{tag}}</b></li>
+    {% endfor %}
+    </ul>
+  </div>
+    <input type="hidden" name="mood" value="{{ mood }}">
+    <input type ="submit" name="action" value="submit" style="height:200px; width:200px">
+</form>
+
+    </div>
+    </div>
+  </body>

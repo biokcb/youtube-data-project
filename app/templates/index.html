@@ -3,6 +3,23 @@
 <!-- your CSS goes between <style> </style> -->
 <style>
 
+body{
+  background-image:url({{ url_for('static', filename='img/calum-lewis-391372-unsplash.jpg') }});
+  width:100%;
+  background-size: cover;
+}
+   
+@media only screen and (max-width: 800px) {
+    body { background-size: auto;}
+}
+
+footer {
+   position:fixed;
+   left:0px;
+   bottom:0px;
+   height:40px;
+   width:100%;
+}
  .main {
  background-color: rgba(255, 255, 255, 0.5);
  margin-top: 100px;
@@ -19,7 +36,7 @@
  color: #2E3759;
  }
  .main h3 {
- font-size: 2em;
+ font-size: 1.5em;
  font-family: Arial;
  color: #2E3759;
  }
@@ -28,6 +45,21 @@
  font-family: Arial;
  color: #2E3759;
  }
+
+input[type=button], input[type=submit], input[type=reset] {
+    width: 260px;
+    height: 35px;
+    background: #2E3759;
+    border: 1px solid #fff;
+    cursor: pointer;
+    border-radius: 2px;
+    color: white;
+    font-family: Arial;
+    font-size: 16px;
+    font-weight: 400;
+    padding: 6px;
+    margin-top: 10px;
+}
 
 </style>
 
@@ -43,22 +75,23 @@
       <div style="text-align:center">
       <br><br><br>
       <div class="starter-template">
-        <h2> Find a cooking channel!</h2>
+        <h2>FoodMood: Find new cooking videos</h2>
+<hr>
+      <div><h3>Select an audience reaction:</h3></div>
 
-      <div><h3>What do you want to do?</h3></div>
-
-  <form id="style_form" action="/recommendations" method="POST">
+  <form id="style_form" action="/recommended_tags" method="POST">
       <div class="panel-body">
-          <input type ="submit" name="action" value="Relax" style="height:100px; width:100px">
-      </div>
-      <div class="panel-body">
-          <input type ="submit" name="action" value="Laugh" style="height:100px; width:100px" >
-      </div>
-      <div class="panel-body">
-          <input type ="submit" name="action" value="Something else" style="height:100px; width:100px">
+          <input type ="submit" name="action" value="Relaxed" style="height:50px; width:100px">
+          <input type ="submit" name="action" value="Excited" style="height:50px; width:100px" >
+          <input type ="submit" name="action" value="Joking" style="height:50px; width:100px">
+          <input type ="submit" name="action" value="Annoyed" style="height:50px; width:100px">
       </div>
  </form>
 
     </div>
     </div>
-  </body>
+</body>
+<br>
+<footer>
+  <p class="text-center small"> Insight Remote Program | 2019</p>
+</footer>
