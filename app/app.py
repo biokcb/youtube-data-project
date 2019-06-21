@@ -27,13 +27,13 @@ def get_top_videos(mood, engine, table):
     videos = sqlalchemy.Table(table, sqlalchemy.MetaData(), autoload=True, autoload_with=engine)
     
     if mood == 'excited':
-        videos_query = sqlalchemy.select([videos]).order_by(videos.columns.excited_score.desc()).limit(20)
+        videos_query = sqlalchemy.select([videos]).order_by(videos.columns.excited_score.desc()).limit(30)
     elif mood == 'relaxed':
-        videos_query = sqlalchemy.select([videos]).order_by(videos.columns.calm_score.desc()).limit(20)
+        videos_query = sqlalchemy.select([videos]).order_by(videos.columns.calm_score.desc()).limit(30)
     elif mood == 'joking':
-        videos_query = sqlalchemy.select([videos]).order_by(videos.columns.joke_score.desc()).limit(20)
+        videos_query = sqlalchemy.select([videos]).order_by(videos.columns.joke_score.desc()).limit(30)
     elif mood == 'annoyed':
-        videos_query = sqlalchemy.select([videos]).order_by(videos.columns.annoyed_score.desc()).limit(20)
+        videos_query = sqlalchemy.select([videos]).order_by(videos.columns.annoyed_score.desc()).limit(30)
     else:
         raise ValueError("Mood requested does not exist in database")
         
@@ -42,18 +42,20 @@ def get_top_videos(mood, engine, table):
     return videos_df
 
 def get_top_tags(df):
-    """ Grab the top 10 common video tags """
+    """ Grab the top 15 common video tags """
     stop_words = set(stopwords.words('english') +
                      ['buzzfeed', 'tasty', 'food'])
     tags = df['top_tag'].dropna().str.lower().unique()
     tags = [x for x in tags if x not in stop_words]
 
-    return tags[:10]
+    return tags[:15]
 
 def get_final_recs(df, tags):
     """ After mood & tags are selected, return best recommendations """
-
+    
     if tags is None or tags == []:
+        df_tags = df[:3]
+    elif 'anything' in tags:
         df_tags = df[:3]
     else:
         df_tags = df[df['top_tag'].isin(tags)][:3]

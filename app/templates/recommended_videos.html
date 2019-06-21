@@ -36,26 +36,21 @@ body{
  color: #2E3759;
  }
 
- .main hr {
-  border: none;
-  border-top: 1px solid whitesmoke;
+a:link, a:visited {
+  color: #2E3759;
+  text-decoration: none;
 }
 
-input[type=button], input[type=submit], input[type=reset] {
-    width: 260px;
-    height: 20px;
-    background: #2E3759;
-    border: 1px solid #fff;
-    cursor: pointer;
-    border-radius: 2px;
-    color: white;
-    font-family: Arial;
-    font-size: 16px;
-    font-weight: 400;
-    padding: 6px;
-    margin-top: 10px;
+a:hover, a:active {
+  color: #515e91;
 }
 
+.container{
+  margin: 0 auto;
+  align-content: center;
+  max-width: 600px;
+  min-width: 200px;
+}
 </style>
 
 
@@ -69,18 +64,17 @@ input[type=button], input[type=submit], input[type=reset] {
 
 <br><br>
 <h1>You might like these videos!</h1>
-
+<hr>
+{% for title,url,thumb,desc in vid_data %}
 <div class="container">
   <div class="starter-template">
-  {% for title,url,thumb,desc in vid_data %}
     <p class="lead">
     <a href="https://www.youtube.com/watch?v={{url}}"><h3>{{title}}</h3><br>
-    <img src="{{thumb}}" width="200" height="100"></a><br>
-    {{desc}}
+    <img src="{{thumb}}" width="250" height="150"></a><br>
+    <p>{{desc}}</p>
     <hr>
-
-  {% endfor %}
 </div></div>
+{% endfor %}
 
 </div></div>
 </body>

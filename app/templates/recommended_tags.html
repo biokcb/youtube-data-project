@@ -57,6 +57,12 @@ input[type='checkbox'] {
 input[type='checkbox']:checked {
     background: #27db42;
 }
+.container{
+  margin: 0 auto;
+  align-content: center;
+  max-width: 600px;
+  min-width: 200px;
+}
 
 </style>
 
@@ -73,10 +79,13 @@ input[type='checkbox']:checked {
       <br><br><br>
       <div class="starter-template">
       <h2>Select some topics:</h2>
-<br>
+<hr>
+<div class="containter">
+  <div class="starter-template">
 <form method="POST" action="/recommended_videos">
   <div class="input">
     <ul>
+      <li><input type="checkbox" name="taglist" value="anything"> <b>Anything!</b></li>
     {% for tag in tags %}   
       <li><input type="checkbox" name="taglist" value="{{tag}}"> <b>{{tag}}</b></li>
     {% endfor %}
@@ -85,7 +94,7 @@ input[type='checkbox']:checked {
     <input type="hidden" name="mood" value="{{ mood }}">
     <input type ="submit" name="action" value="submit" style="height:200px; width:200px">
 </form>
-
+</div></div>
     </div>
     </div>
   </body>
