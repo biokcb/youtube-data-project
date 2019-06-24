@@ -5,7 +5,7 @@ body{
   width:100%;
   background-size: cover;
 }
-   
+
 @media only screen and (max-width: 800px) {
     body { background-size: auto;}
 }
@@ -52,17 +52,14 @@ a:hover, a:active {
   min-width: 200px;
 }
 </style>
-
-
+<div class="overlay">
+</div>
 <title>FoodMood</title>
 </head>
 <body>
 <div class="main">
   <div style="text-align:center">
   <br><br>
-  <div class="starter-template">
-
-<br><br>
 <h1>You might like these videos!</h1>
 <hr>
 {% for title,url,thumb,desc in vid_data %}
@@ -75,6 +72,5 @@ a:hover, a:active {
     <hr>
 </div></div>
 {% endfor %}
-
 </div></div>
 </body>

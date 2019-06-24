@@ -40,6 +40,11 @@ footer {
  font-family: Arial;
  color: #2E3759;
  }
+ .main h4 {
+ font-size: 1em;
+ font-family: Arial;
+ color: #2E3759;
+ }
  .main p {
  font-size:1em;
  font-family: Arial;
@@ -60,6 +65,27 @@ input[type=button], input[type=submit], input[type=reset] {
     padding: 6px;
     margin-top: 10px;
 }
+ul {
+  list-style-type: none;
+}
+li {
+  display: inline-block;
+}
+
+input[type='checkbox'] {
+    -webkit-appearance:none;
+    width:20px;
+    height:20px;
+    background:white;
+    border-radius:5px;
+    border:2px solid #555;
+}
+input[type='checkbox']:checked {
+    background: #2E3759;
+}
+input[type='checkbox']:hover{
+    background: #515e91;
+}
 
 </style>
 
@@ -75,11 +101,31 @@ input[type=button], input[type=submit], input[type=reset] {
       <div style="text-align:center">
       <br><br><br>
       <div class="starter-template">
-        <h2>FoodMood: Find new cooking videos</h2>
+        <h2>FoodMood: Find cooking videos for your mood</h2>
 <hr>
+  <form id="style_form" action="/recommended_tags" method="POST">
+      <div><h3>Select any video preferences:</h3></div>
+      <div class="panel-body">
+        <h4>Duration:</h4>
+        <ul>
+          <li><input type="checkbox" name="timelist" value="short"> <b>short (0-1 min)</b></li>
+          <li><input type="checkbox" name="timelist" value="medium"> <b>medium (1-10 min)</b></li>
+          <li><input type="checkbox" name="timelist" value="long"> <b>long (10+ min)</b></li>
+        </ul>
+        <h4>Views:</h4>
+        <ul>
+          <li><input type="checkbox" name="viewlist" value="popular"><b>Popular</b></li>
+          <li><input type="checkbox" name="viewlist" value="average"><b>Average</b></li>
+          <li><input type="checkbox" name="viewlist" value="undiscovered"><b>Undiscovered</b></li>
+        </ul>
+        <h4>Uploaded:</h4>
+        <ul>
+          <li><input type="checkbox" name="uploadlist" value="recent"> <b>recent</b></li>
+          <li><input type="checkbox" name="uploadlist" value="any"> <b>anytime</b></li>
+        </ul>
+      </div>
       <div><h3>Select an audience reaction:</h3></div>
 
-  <form id="style_form" action="/recommended_tags" method="POST">
       <div class="panel-body">
           <input type ="submit" name="action" value="Relaxed" style="height:50px; width:100px">
           <input type ="submit" name="action" value="Excited" style="height:50px; width:100px" >
@@ -87,6 +133,8 @@ input[type=button], input[type=submit], input[type=reset] {
           <input type ="submit" name="action" value="Annoyed" style="height:50px; width:100px">
       </div>
  </form>
+
+
 
     </div>
     </div>
