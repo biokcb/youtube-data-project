@@ -1,3 +1,4 @@
+import argparse
 import requests
 import pandas as pd
 import numpy as np
@@ -7,6 +8,14 @@ from sqlalchemy import create_engine, MetaData, Table
 from sqlalchemy_utils import database_exists, create_database
 import psycopg2
 from nltk.corpus import stopwords
+
+def get_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--database', '-d', help='Name of database to load', required=True)
+    parser.add_argument('--table', '-t', help='Table of video information', required=True)
+    parser.add_argument('--user', '-u', help='Username for database connection', required=True)
+
+    return parser.parse_args()
 
 ## Functions required to run app
 def load_db(dbname, username):
@@ -65,7 +74,9 @@ def get_final_recs(df, tags):
 
 ## Initialize app
 app = Flask(__name__, static_url_path='/static')
-engine, connection = load_db('cheftube', 'kristenbrown')
+args = get_args()
+engine, connection = load_db(args.database, args.user)
+vid_table = args.table
 
 ## Render templates
 
@@ -78,7 +89,7 @@ def recommended_tags(engine=engine):
     if 'action' in request.form.keys():
         mood = request.form['action'].lower()
         
-        df = get_top_videos(mood, engine, 'videos_model_3')
+        df = get_top_videos(mood, engine, vid_table)
         tags = get_top_tags(df)
 
     return render_template('recommended_tags.html', tags=tags,
@@ -96,7 +107,7 @@ def recommended_videos():
     else:
         raise Exception('Mood not selected')
 
-    df = get_top_videos(mood, engine, 'videos_model_3')
+    df = get_top_videos(mood, engine, vid_table)
     df_final = get_final_recs(df, tags)
 
     vid_titles = df_final['title']
