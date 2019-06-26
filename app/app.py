@@ -114,13 +114,13 @@ def get_top_videos(mood, engine, table, meta):
                    cast(videos.columns.upload_date,sqlalchemy.Integer) < max_upl]
 
     if mood == 'excited':
-        videos_query = sqlalchemy.select([videos]).where(and_(*meta_filter)).order_by(videos.columns.excited_score.desc()).limit(30)
+        videos_query = sqlalchemy.select([videos]).where(and_(*meta_filter)).order_by(videos.columns.excited_score.desc()).limit(50)
     elif mood == 'relaxed':
-        videos_query = sqlalchemy.select([videos]).where(and_(*meta_filter)).order_by(videos.columns.calm_score.desc()).limit(30)
+        videos_query = sqlalchemy.select([videos]).where(and_(*meta_filter)).order_by(videos.columns.calm_score.desc()).limit(50)
     elif mood == 'joking':
-        videos_query = sqlalchemy.select([videos]).where(and_(*meta_filter)).order_by(videos.columns.joke_score.desc()).limit(30)
+        videos_query = sqlalchemy.select([videos]).where(and_(*meta_filter)).order_by(videos.columns.joke_score.desc()).limit(50)
     elif mood == 'annoyed':
-        videos_query = sqlalchemy.select([videos]).where(and_(*meta_filter)).order_by(videos.columns.annoyed_score.desc()).limit(30)
+        videos_query = sqlalchemy.select([videos]).where(and_(*meta_filter)).order_by(videos.columns.annoyed_score.desc()).limit(50)
     else:
         raise ValueError("Mood requested does not exist in database")
         
@@ -128,14 +128,22 @@ def get_top_videos(mood, engine, table, meta):
     
     return videos_df
 
-def get_top_tags(df):
+def get_top_tags(engine, table):
     """ Grab the top 15 common video tags """
     stop_words = set(stopwords.words('english') +
-                     ['buzzfeed', 'tasty', 'food'])
-    tags = df['top_tag'].dropna().str.lower().unique()
+                     ['buzzfeed', 'tasty', 'food',
+                     'cooking','baking','almazan','almazankitchen',
+                     'almazankitchenknife', 'foodporn', 'recipe',
+                     'recipes', '#hangoutsonair', 'bestdinners',
+                     'best','anna', 'life', 'cook', 'bake'])
+    videos = sqlalchemy.Table(table, sqlalchemy.MetaData(), autoload=True, autoload_with=engine)
+    tag_query = sqlalchemy.select([videos.columns.top_tag])
+    tag_df = pd.read_sql(tag_query, engine)
+    tag_df = tag_df['top_tag'].dropna().str.lower().value_counts()
+    tags = tag_df[:100].index.values
     tags = [x for x in tags if x not in stop_words]
 
-    return tags[:15]
+    return tags[:20]
 
 def get_final_recs(df, tags):
     """ After mood & tags are selected, return best recommendations """
@@ -155,15 +163,21 @@ app = Flask(__name__, static_url_path='/static')
 args = get_args()
 engine, connection = load_db(args.database, args.user)
 vid_table = args.table
+tags = get_top_tags(engine, vid_table)
 
 ## Render templates
 
 @app.route('/', methods=['GET', 'POST'])
-def index():
-    return render_template('index.html')
+def index(tags=tags):
+    return render_template('index.html', tags=tags)
 
-@app.route('/recommended_tags', methods=['GET', 'POST'])
-def recommended_tags(engine=engine):
+@app.route('/recommended_videos', methods=['GET', 'POST'])
+def recommended_videos(engine=engine, vid_table=vid_table):
+    if 'taglist' in request.form.keys():
+        tags_sel = request.form.getlist('taglist')
+    else:
+        tags_sel = None
+    
     meta = {}
 
     if 'timelist' in request.form.keys():
@@ -176,36 +190,13 @@ def recommended_tags(engine=engine):
         mood = request.form['action'].lower()
 
         df = get_top_videos(mood, engine, vid_table, meta)
-        tags = get_top_tags(df)
+        df_final = get_final_recs(df, tags_sel)
 
-    return render_template('recommended_tags.html', tags=tags,
-                           mood=mood, meta=meta) 
+        vid_titles = df_final['title']
+        vid_urls = df_final['id']
+        vid_thumbs = df_final['thumbnail']
 
-@app.route('/recommended_videos', methods=['GET', 'POST'])
-def recommended_videos():
-    if 'taglist' in request.form.keys():
-        tags = request.form.getlist('taglist')
-    else:
-        tags = None
-
-    if 'mood' in request.form.keys():
-        mood = request.form['mood']
-    else:
-        raise Exception('Mood not selected')
-    if 'meta' in request.form.keys():
-        meta = ast.literal_eval(request.form['meta'])
-    else:
-        raise Exception('Metadata not selected')
-
-    df = get_top_videos(mood, engine, vid_table, meta)
-    df_final = get_final_recs(df, tags)
-
-    vid_titles = df_final['title']
-    vid_urls = df_final['id']
-    vid_thumbs = df_final['thumbnail']
-    vid_descs = df_final['description']
-
-    vid_data = zip(vid_titles,vid_urls,vid_thumbs,vid_descs)
+        vid_data = zip(vid_titles,vid_urls,vid_thumbs)
 
     return render_template('recommended_videos.html', vid_data=vid_data)
 

@@ -103,7 +103,7 @@ input[type='checkbox']:hover{
       <div class="starter-template">
         <h2>FoodMood: Find cooking videos for your mood</h2>
 <hr>
-  <form id="style_form" action="/recommended_tags" method="POST">
+  <form id="style_form" action="/recommended_videos" method="POST">
       <div><h3>Select any video preferences:</h3></div>
       <div class="panel-body">
         <h4>Duration:</h4>
@@ -124,8 +124,18 @@ input[type='checkbox']:hover{
           <li><input type="checkbox" name="uploadlist" value="any"> <b>anytime</b></li>
         </ul>
       </div>
+      <h3>Select any topics:</h3>
+        <div class="panel-body">
+            <div class="input">
+              <ul>
+                <li><input type="checkbox" name="taglist" value="anything"> <b>Anything!</b></li>
+                {% for tag in tags %}   
+                <li><input type="checkbox" name="taglist" value="{{tag}}"> <b>{{tag}}</b></li>
+                {% endfor %}
+              </ul>
+            </div>
+        </div>
       <div><h3>Select an audience reaction:</h3></div>
-
       <div class="panel-body">
           <input type ="submit" name="action" value="Relaxed" style="height:50px; width:100px">
           <input type ="submit" name="action" value="Excited" style="height:50px; width:100px" >

@@ -62,14 +62,13 @@ a:hover, a:active {
   <br><br>
 <h1>You might like these videos!</h1>
 <hr>
-{% for title,url,thumb,desc in vid_data %}
+{% for title,url,thumb in vid_data %}
 <div class="container">
   <div class="starter-template">
     <p class="lead">
-    <a href="https://www.youtube.com/watch?v={{url}}"><h3>{{title}}</h3><br>
+    <a href="https://www.youtube.com/watch?v={{url}}"><h3>{{title}}</h3>
     <img src="{{thumb}}" width="250" height="150"></a><br>
-    <p>{{desc}}</p>
-    <hr>
+    <br><hr>
 </div></div>
 {% endfor %}
 </div></div>
