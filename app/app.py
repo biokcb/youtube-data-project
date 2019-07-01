@@ -4,12 +4,12 @@ import ast
 import pandas as pd
 import numpy as np
 import sqlalchemy
+from collections import Counter
 from flask import Flask, render_template, request
 from sqlalchemy import create_engine, MetaData, Table, and_
 from sqlalchemy_utils import database_exists, create_database
 from sqlalchemy.sql.expression import cast
 import psycopg2
-from nltk.corpus import stopwords
 
 def get_args():
     parser = argparse.ArgumentParser()
@@ -114,13 +114,13 @@ def get_top_videos(mood, engine, table, meta):
                    cast(videos.columns.upload_date,sqlalchemy.Integer) < max_upl]
 
     if mood == 'excited':
-        videos_query = sqlalchemy.select([videos]).where(and_(*meta_filter)).order_by(videos.columns.excited_score.desc()).limit(50)
+        videos_query = sqlalchemy.select([videos]).where(and_(*meta_filter)).order_by(videos.columns.excited_score.desc()).limit(100)
     elif mood == 'relaxed':
-        videos_query = sqlalchemy.select([videos]).where(and_(*meta_filter)).order_by(videos.columns.calm_score.desc()).limit(50)
+        videos_query = sqlalchemy.select([videos]).where(and_(*meta_filter)).order_by(videos.columns.calm_score.desc()).limit(100)
     elif mood == 'joking':
-        videos_query = sqlalchemy.select([videos]).where(and_(*meta_filter)).order_by(videos.columns.joke_score.desc()).limit(50)
+        videos_query = sqlalchemy.select([videos]).where(and_(*meta_filter)).order_by(videos.columns.joke_score.desc()).limit(100)
     elif mood == 'annoyed':
-        videos_query = sqlalchemy.select([videos]).where(and_(*meta_filter)).order_by(videos.columns.annoyed_score.desc()).limit(50)
+        videos_query = sqlalchemy.select([videos]).where(and_(*meta_filter)).order_by(videos.columns.annoyed_score.desc()).limit(100)
     else:
         raise ValueError("Mood requested does not exist in database")
         
@@ -128,19 +128,36 @@ def get_top_videos(mood, engine, table, meta):
     
     return videos_df
 
-def get_top_tags(engine, table):
-    """ Grab the top 15 common video tags """
-    stop_words = set(stopwords.words('english') +
+def get_vid_tags(tags):
+    """ Return the top 5 tags for a given list of tags """
+    if isinstance(tags, list):
+        tags = ' '.join(tags)
+    
+    tags = tags.replace(',',' ').replace('{', '').replace('(','')
+    tags = tags.replace('\"','').replace('}','').replace(')','')
+    tags = tags.lower()
+    tags = tags.split()
+    tag_counts = Counter(tags).most_common(5)
+
+    return [x[0] for x in tag_counts]
+
+def get_top_tags(engine, table, en_stop_words):
+    """ Grab the top 20 common video tags """
+    stop_words = set(en_stop_words +
                      ['buzzfeed', 'tasty', 'food',
                      'cooking','baking','almazan','almazankitchen',
                      'almazankitchenknife', 'foodporn', 'recipe',
                      'recipes', '#hangoutsonair', 'bestdinners',
-                     'best','anna', 'life', 'cook', 'bake'])
+                     'best','anna', 'life', 'cook', 'bake',
+                     'yolanda', 'olson', 'village', 'yummy',
+                     'instant','pot','special'])
     videos = sqlalchemy.Table(table, sqlalchemy.MetaData(), autoload=True, autoload_with=engine)
-    tag_query = sqlalchemy.select([videos.columns.top_tag])
+    tag_query = sqlalchemy.select([videos.columns.tags])
     tag_df = pd.read_sql(tag_query, engine)
-    tag_df = tag_df['top_tag'].dropna().str.lower().value_counts()
-    tags = tag_df[:100].index.values
+
+    tag_df['top_tags'] = tag_df['tags'].apply(get_vid_tags)
+    tag_counts = pd.Series([x for y in tag_df['top_tags'].dropna() for x in y]).value_counts()
+    tags = tag_counts[:100].index.values
     tags = [x for x in tags if x not in stop_words]
 
     return tags[:20]
@@ -150,12 +167,19 @@ def get_final_recs(df, tags):
     
     if tags is None or tags == []:
         df_tags = df[:3]
+        untagged = 'No tags selected, so we picked a few for you!'
     elif 'anything' in tags:
         df_tags = df[:3]
+        untagged = 'You selected anything as a topic, so we picked a few for you!'
     else:
-        df_tags = df[df['top_tag'].isin(tags)][:3]
-    
-    return df_tags
+        df['top_tags'] = df['tags'].apply(get_vid_tags)
+        df_tags = df[ [bool(set(x) & set(tags)) for x in df['top_tags']] ][:3]
+        untagged = 'We were able to find these videos matching your topics in this category!'
+        if df_tags.empty:
+            df_tags = df[:3]
+            untagged = 'We couldn\'t find good topic matches for this category, so here are a few other suggestions~'
+
+    return df_tags, untagged
     
 
 ## Initialize app
@@ -163,7 +187,10 @@ app = Flask(__name__, static_url_path='/static')
 args = get_args()
 engine, connection = load_db(args.database, args.user)
 vid_table = args.table
-tags = get_top_tags(engine, vid_table)
+
+with open('data/stopwords.txt') as sw:
+    en_stop_words = [line.strip() for line in sw]
+tags = get_top_tags(engine, vid_table, en_stop_words)
 
 ## Render templates
 
@@ -190,7 +217,7 @@ def recommended_videos(engine=engine, vid_table=vid_table):
         mood = request.form['action'].lower()
 
         df = get_top_videos(mood, engine, vid_table, meta)
-        df_final = get_final_recs(df, tags_sel)
+        df_final, untagged = get_final_recs(df, tags_sel)
 
         vid_titles = df_final['title']
         vid_urls = df_final['id']
@@ -198,7 +225,7 @@ def recommended_videos(engine=engine, vid_table=vid_table):
 
         vid_data = zip(vid_titles,vid_urls,vid_thumbs)
 
-    return render_template('recommended_videos.html', vid_data=vid_data)
+    return render_template('recommended_videos.html', vid_data=vid_data, untagged=untagged)
 
 if __name__ == '__main__':
     #this runs your app locally
